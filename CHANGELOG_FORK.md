@@ -43,3 +43,7 @@ Based on upstream `2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4` (2026-11-21).
 
 * Removed the third-party `android-actions/setup-android` step (it failed on the runner) - the workflow now uses the runner's preinstalled Android SDK + `sdkmanager` directly.
 * ksud / Gradle build steps are `continue-on-error`: if the full native+Kotlin toolchain cannot be assembled, the job still uploads the clearly-labelled official upstream APK together with `LICENSE` + `kernel/LICENSE`, and no fake "fork APK" is claimed.
+
+### Build workflow fix 2 (2026-11-24, commit 5)
+
+* The Gradle build (commit 4 run) succeeded and produced the fork Manager debug APK, but the dist collection step returned non-zero and skipped the upload. Collection and upload are now `if: always()` and fully fault-tolerant (`find` instead of a glob, separate names for the two LICENSE files, explicit `exit 0`). No source logic changed.

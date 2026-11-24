@@ -75,15 +75,24 @@ jobs:
             "https://github.com/tiann/KernelSU/releases/download/v3.3.1/KernelSU_v3.3.1_32680-release.apk" || true
           ls -lh upstream-official.apk 2>/dev/null || echo "official download skipped"
 
-      - name: Collect fork APK into dist/
+      - name: Collect APKs and licenses into dist/
+        if: always()
         run: |
+          set +e
           mkdir -p dist
-          cp manager/app/build/outputs/apk/debug/*.apk dist/ || true
-          if [ -f upstream-official.apk ]; then cp upstream-official.apk dist/; fi
-          cp LICENSE kernel/LICENSE dist/
+          find manager/app/build/outputs -type f -name '*.apk' -print -exec cp {} dist/ \;
+          if [ -s upstream-official.apk ]; then
+            cp upstream-official.apk dist/upstream-official.apk
+          fi
+          cp LICENSE dist/LICENSE
+          cp kernel/LICENSE dist/kernel-LICENSE
+          echo "--- dist ---"
           ls -lh dist/
+          echo "apk count: $(find dist -name '*.apk' | wc -l)"
+          exit 0
 
       - name: Upload fork APK + licenses
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: fork-manager-apk
