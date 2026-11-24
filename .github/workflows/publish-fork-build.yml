@@ -11,11 +11,11 @@ on:
   workflow_dispatch:
     inputs:
       run_id:
-        description: 'Actions run id that produced fork-manager-apk'
+        description: Actions run id that produced fork-manager-apk
         required: true
         type: string
       source_commit:
-        description: 'Exact source commit of that build'
+        description: Exact source commit of that build
         required: true
         type: string
 
@@ -27,6 +27,9 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout (for BUILD_INFO.md / RELEASE_NOTES_BUILD.md)
+        uses: actions/checkout@v4
+
       - name: Download the built artifact
         uses: actions/download-artifact@v4
         with:
@@ -38,44 +41,26 @@ jobs:
       - name: Inspect artifact
         run: |
           ls -lh dist/
-          echo "--- apk headers ---"
+          echo "--- apk magic ---"
           for f in dist/*.apk; do
             [ -f "$f" ] || continue
             printf '%s  ' "$f"
             head -c 2 "$f" | od -An -tx1
           done
 
-      - name: Push artifacts to builds branch (for raw / Git-blob retrieval)
+      - name: Push artifacts to builds branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
+          cp BUILD_INFO.md dist/BUILD_INFO.md
+          cp RELEASE_NOTES_BUILD.md dist/RELEASE_NOTES_BUILD.md
           mkdir -p /tmp/pub && cd /tmp/pub
           cp "$GITHUB_WORKSPACE"/dist/* .
-          cat > BUILD_INFO.md <<EOF
-# Build artifacts (binary) - NOT source
-
-These files are build OUTPUTS of commit `${{ inputs.source_commit }}`
-(Actions run `${{ inputs.run_id }}`). The corresponding source is the full
-repository at that commit, published as a source zip in the Release and in
-the main branch. Both GPL license texts are included here unchanged.
-
-* \`LICENSE\` = GPL-3.0-or-later (root/Manager/docs)
-* \`kernel-LICENSE\` = GPL-2.0-only (kernel/ directory)
-
-If you redistribute any APK from here you must ship that exact source tree
-and both license texts with it. A private repo is only for your own artifacts,
-not for handing a closed-source binary to others.
-
-The fork APK is DEBUG-SIGNED. A stock official KernelSU kernel validates the
-Manager APK signature and will normally reject it; rebuild the kernel module
-with the matching certificate hash to actually use it. The official APK is
-included only as a clearly-labelled reference.
-EOF
           git init -q
           git checkout -q -b builds
-          git config user.name "lyu323-bot"
-          git config user.email "lyu323-bot@users.noreply.github.com"
+          git config user.name lyu323-bot
+          git config user.email lyu323-bot@users.noreply.github.com
           git add -A
           git commit -q -m "build artifacts of ${{ inputs.source_commit }} (run ${{ inputs.run_id }})"
           git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/lyu323/KernelSU-lyu323-fork.git"
@@ -89,12 +74,5 @@ EOF
           set -e
           TAG="lyu323-fork-1-build1"
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" \
-            --title "lyu323 fork - built Manager APK (source commit included)" \
-            --notes "Built from source commit \`${{ inputs.source_commit }}\` (Actions run \`${{ inputs.run_id }}\`). The complete corresponding source is the repository at that commit (source zip attached / GitHub-generated source archive), plus LICENSE (GPL-3.0-or-later) and kernel-LICENSE (GPL-2.0-only), both included unchanged.
-
-**This is an UNOFFICIAL fork.** The fork APK is DEBUG-SIGNED: a stock official KernelSU kernel validates the Manager APK signature and will normally reject it. To use it you must rebuild the kernel module with this APK's certificate hash. \`upstream-official.apk\` is the official, unmodified v3.3.1 Manager, included only as a reference.
-
-No kernel module, ksud standalone binary or boot image is distributed here. Nothing has been verified on a real device." \
-            dist/*.apk dist/LICENSE dist/kernel-LICENSE
+          gh release create "$TAG" --title "lyu323 fork - built Manager APK" --notes-file RELEASE_NOTES_BUILD.md dist/*.apk dist/LICENSE dist/kernel-LICENSE
           echo "release created"

@@ -52,3 +52,7 @@ Based on upstream `2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4` (2026-11-21).
 
 * NEW `.github/workflows/publish-fork-build.yml`: downloads the already-built `fork-manager-apk` artifact (no recompilation), pushes it to the `builds` branch together with both GPL license texts, and creates Release `lyu323-fork-1-build1` with the APKs + licenses. The Release notes name the exact source commit and repeat the signature caveat.
 * The `builds` branch contains build OUTPUTS only, clearly separated from source on `main`. Every binary there is tied to a named source commit and both license texts.
+
+### Artifact publishing fix (2026-11-24, commit 7)
+
+* Fixed the publish workflow YAML (an unindented heredoc inside a `run: |` block made GitHub fail to register its `workflow_dispatch` trigger). Release notes and binary-build info are now plain repository files (`RELEASE_NOTES_BUILD.md`, `BUILD_INFO.md`) instead of shell heredocs.
