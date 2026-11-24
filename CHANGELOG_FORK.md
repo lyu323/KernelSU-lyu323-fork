@@ -47,3 +47,8 @@ Based on upstream `2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4` (2026-11-21).
 ### Build workflow fix 2 (2026-11-24, commit 5)
 
 * The Gradle build (commit 4 run) succeeded and produced the fork Manager debug APK, but the dist collection step returned non-zero and skipped the upload. Collection and upload are now `if: always()` and fully fault-tolerant (`find` instead of a glob, separate names for the two LICENSE files, explicit `exit 0`). No source logic changed.
+
+### Artifact publishing (2026-11-24, commit 6)
+
+* NEW `.github/workflows/publish-fork-build.yml`: downloads the already-built `fork-manager-apk` artifact (no recompilation), pushes it to the `builds` branch together with both GPL license texts, and creates Release `lyu323-fork-1-build1` with the APKs + licenses. The Release notes name the exact source commit and repeat the signature caveat.
+* The `builds` branch contains build OUTPUTS only, clearly separated from source on `main`. Every binary there is tied to a named source commit and both license texts.
