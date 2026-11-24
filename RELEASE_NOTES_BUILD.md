@@ -1,25 +1,29 @@
-<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
-## lyu323 fork - built Manager APK (UNOFFICIAL)
+## lyu323 fork 2 - built Manager APK (UNOFFICIAL)
 
-This Release contains a **real APK compiled from this fork's source** by
-GitHub Actions (`Build fork Manager APK` workflow), plus the official
-upstream v3.3.1 Manager APK as a clearly-labelled reference.
+**What is fixed in this build**
 
-* Exact source commit: `2b0dbe0b7e` (see `FORK_NOTES.md` / `CHANGELOG_FORK.md`; the full source zip of that commit accompanies this APK, and the repository itself is the corresponding source).
-* `LICENSE` (GPL-3.0-or-later) and `kernel-LICENSE` (GPL-2.0-only) are attached unchanged. **`kernel/**` is GPL-2.0-only; everything else is GPL-3.0-or-later.**
+* Independent package name `me.lyu323.kernelsu` - the fork and the official Manager can coexist (no more same-package-name signature conflict).
+* `android:extractNativeLibs="true"` - `libksud.so` is extracted as a real file into `nativeLibraryDir`, so external tooling can actually see it.
+* ksud now embeds the official v3.3.1 aarch64 LKM modules for 8 KMI variants plus `ksuinit`; the previous build had no kernel module inside ksud, which is why "install / jailbreak" could not supply one.
+* About page explains the "Not installed" state, the debug-signature limit, and why KernelSU and Magisk cannot be toggled with an in-app switch.
+* Status/navigation bars follow the dark-cyan palette; version suffix `-lyu323-fork2`.
+* `ROOT_GUIDE.md` documents the read-only checklist and a neutral explanation of the third-party exploit timeout.
 
-> If you redistribute any APK from here, you must ship the exact corresponding source tree and both license texts with it. A private repository is fine for your own build artifacts, but cannot be used to hand a closed-source binary to others.
+**Not a one-tap KSU/Magisk switch.** Both replace boot/init_boot and cannot be active at the same time; switching requires re-flashing a matching image and rebooting. This app does not flash, patch or replace any partition and does not show a fake "switched" state.
 
-### Caveats (read before installing)
+### Caveats
 
-1. **This is NOT the official KernelSU.** Unofficial fork of https://github.com/tiann/KernelSU, not affiliated with the upstream authors.
-2. **The fork APK is DEBUG-SIGNED.** The official kernel side validates the Manager APK signature, so a stock official KernelSU kernel will normally reject it. To use it, rebuild the kernel module with this APK's certificate hash (and `KSU_MANAGER_PACKAGE` if the package name is changed). No such kernel module is provided here.
-3. **The Manager APK alone does NOT give root.** It needs the kernel module / patched boot image built for your exact device GKI KMI. Back up your stock boot image before flashing anything.
-4. `upstream-official.apk` is the official, unmodified v3.3.1 Manager - the one that actually works with official kernels. Use that if you just need a working root solution.
-5. Built on a CI runner, **not verified on any real device**.
+1. **UNOFFICIAL fork** of https://github.com/tiann/KernelSU. Not affiliated with upstream.
+2. **DEBUG-SIGNED**. A stock official KernelSU kernel validates the Manager package name + certificate hash and will reject this build. To use it, rebuild the kernel module with this APK's certificate and `KSU_MANAGER_PACKAGE=me.lyu323.kernelsu`.
+3. **The Manager APK alone does NOT grant root.** It needs the kernel module / patched boot image for your exact device KMI. Back up your stock image before flashing.
+4. `upstream-official.apk` is the official, unmodified v3.3.1 Manager - use that if you just need a working root solution.
+5. Built on a CI runner, **not verified on a real device**.
 
-### What was customized (Manager only)
+### License / corresponding source
 
-App label `KernelSU (lyu323 Fork)`, version suffix `-lyu323-fork1`, About text marking it as an unofficial fork, dark-cyan launcher/splash palette, one extra selectable theme color. Kernel module, ksud/ksuinit source, su/App Profile/module/SELinux logic, dependency manifests and translations are verbatim upstream; every modified file carries a dated GPL prominent notice.
+* `kernel/**` = **GPL-2.0-only** (`kernel-LICENSE`, verbatim); everything else = **GPL-3.0-or-later** (`LICENSE`, verbatim).
+* `KernelSU-lyu323-fork-source.zip` is the complete source tree of the exact commit named below. Both license texts are attached.
+* Distribute any APK from here together with that exact source tree and both license texts. A private repository is fine for your own build artifacts, but cannot be used to hand a closed-source binary to others.
+* The bundled `.ko` binaries come from the official v3.3.1 Release; their corresponding source is this repository's verbatim `kernel/` tree.
 
 Build run: https://github.com/lyu323/KernelSU-lyu323-fork/actions

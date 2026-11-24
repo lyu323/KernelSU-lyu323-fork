@@ -28,3 +28,13 @@ a clearly-labelled reference. It is not a product of this fork.
 
 No kernel module, standalone ksud binary or boot image is distributed here.
 Nothing has been verified on a real device.
+
+
+---
+
+### fork 2 (2026-11-24)
+
+This build uses the independent package name `me.lyu323.kernelsu`, forces
+`android:extractNativeLibs="true"`, and embeds official v3.3.1 aarch64 LKM
+modules + ksuinit inside ksud. See `ROOT_GUIDE.md` for why the Manager reports
+"Not installed" and why a one-tap KernelSU/Magisk switch is not provided.

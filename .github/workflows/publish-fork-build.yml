@@ -18,6 +18,11 @@ on:
         description: Exact source commit of that build
         required: true
         type: string
+      release_tag:
+        description: Tag for this build Release
+        required: false
+        type: string
+        default: lyu323-fork-2-build1
 
 permissions:
   contents: write
@@ -67,12 +72,19 @@ jobs:
           git push -f -q origin builds
           echo "pushed builds branch"
 
-      - name: Create Release with APK + licenses
+      - name: Create Release with APK + licenses + exact source
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
-          TAG="lyu323-fork-1-build1"
+          TAG="${{ inputs.release_tag }}"
+          curl -fL --retry 3 --max-time 300 -o dist/KernelSU-lyu323-fork-source.zip \
+            "https://codeload.github.com/lyu323/KernelSU-lyu323-fork/zip/${{ inputs.source_commit }}" || true
+          cp RELEASE_NOTES_BUILD.md /tmp/notes.md
+          printf '\n\n---\n\nExact source commit: `%s`\nBuild run: `%s`\n' \
+            "${{ inputs.source_commit }}" "${{ inputs.run_id }}" >> /tmp/notes.md
           gh release delete "$TAG" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$TAG" --title "lyu323 fork - built Manager APK" --notes-file RELEASE_NOTES_BUILD.md dist/*.apk dist/LICENSE dist/kernel-LICENSE
-          echo "release created"
+          gh release create "$TAG" --title "lyu323 fork 2 - built Manager APK" \
+            --notes-file /tmp/notes.md \
+            dist/*.apk dist/LICENSE dist/kernel-LICENSE dist/KernelSU-lyu323-fork-source.zip
+          echo "release created: $TAG"
