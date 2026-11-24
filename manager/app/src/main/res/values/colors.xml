@@ -11,4 +11,6 @@
     <!-- lyu323 fork v3 (2026-11-24): accent + secondary launcher tint -->
     <color name="ksu_accent">#FF26C6DA</color>
     <color name="ic_launcher_foreground_alt">#FF80DEEA</color>
+    <!-- lyu323 fork v4 (2026-11-24): diagnostics card accent -->
+    <color name="ksu_diag_accent">#FF26C6DA</color>
 </resources>

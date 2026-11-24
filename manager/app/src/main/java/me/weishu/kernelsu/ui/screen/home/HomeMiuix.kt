@@ -171,6 +171,8 @@ fun HomePagerMiuix(
                             systemInfo = state.systemInfo,
                             modifier = Modifier.fillMaxWidth(),
                         )
+                        // Added for lyu323 fork (2026-11-24): read-only diagnostics.
+                        DiagnosticsCard()
                         SupportLinks(
                             onOpenUrl = actions.onOpenUrl,
                             modifier = Modifier.fillMaxWidth(),

@@ -87,3 +87,13 @@ v3 一次构建出两个 APK：
 * **Coexist**（`me.lyu323.kernelsu`）→ 可与官方 Manager 并存，硬编码扫描器看不到。
 
 两个都带解压后的 `libksud.so` 与 8 个 KMI 模块。用 `scripts/verify-manager-apk.sh <apk>` 可逐项自检。这是硬编码包名决定的取舍，无法「既独立包名又被扫描器找到」；本 fork 不做任何伪装壳。
+
+## 7. v4 补充：工具找到了管理器，为什么还是没有 root
+
+见 `ROOT_CAUSE.md`。三件事要分开：工具**按包名列出** Manager ✅、工具**跳转**到 Manager ✅、
+系统里**内核侧 KSU** ❌。前两件由工具决定，第三件由内核模块/修补 boot 决定；Manager APK
+永不凭空给 root。上游「越狱」是临时提权功能，你上一轮日志 `EXPLOIT FAILED: TIMEOUT`
+说明那条链没打中（Android 16 / 2026-08-01 补丁 / vendor 12 vs system 16）。本 fork 不调它。
+
+v4 能验证的部分：Compat 用官方原版 `libksud.so`（逐字节一致），首页新增只读诊断卡，
+把 `nativeLibraryDir/libksud.so`、`/dev/kernel_su`、SELinux 等客观事实直接显示出来。

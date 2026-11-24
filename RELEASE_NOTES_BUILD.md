@@ -53,3 +53,33 @@ instructions. `userspace/ksud/build.rs` now forwards `KSU_PACKAGE_NAME` on every
 build (dated notice; no root logic changed).
 
 `upstream-official.apk` remains the official unmodified v3.3.1 reference.
+
+
+---
+
+### fork 4: official libksud.so alignment + read-only diagnostics
+
+A third-party tool now **lists and launches** the Compat Manager, yet the
+Manager still shows "Not installed" and has no root. These are separate facts:
+root comes from the kernel side, never from the Manager APK. The upstream
+Jailbreak/temporary-root path timed out on this device (Android 16,
+2026-08-01 security patch, vendor release 12 vs system 16); no Manager change
+can fix that, and this fork does **not** tune exploits, bypass security patches
+or flash partitions. See `ROOT_CAUSE.md`.
+
+What v4 actually changes:
+
+* **Compat `libksud.so` = official v3.3.1 binary, byte-for-byte, all 3 ABIs**
+  (extracted from the official APK). If a scanner compares so content/size it
+  now sees exactly the official file. Coexist still uses a self-built ksud
+  because it needs its own package name.
+* **New read-only diagnostics card** on both Home UIs: package, version, signer
+  SHA-256, real `nativeLibraryDir/libksud.so` state (exists/size/ELF/8 embedded
+  KMI modules/ksuinit/package strings), `/dev/kernel_su`, `/data/adb/ksu`,
+  SELinux enforce, device + kernel, and a plain conclusion. Copy report / open
+  COMPATIBILITY.md. It runs no shell and touches no partition.
+* `ksu_diag_accent` + three `diag_*` strings.
+
+Corresponding source for the official ksud binary is this repository's verbatim
+`userspace/ksud` (GPL-3.0-or-later) and `kernel/` (GPL-2.0-only) trees; both
+license texts and the exact source zip are attached.

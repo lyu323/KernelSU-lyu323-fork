@@ -67,7 +67,18 @@ jobs:
             "https://github.com/tiann/KernelSU/releases/download/v3.3.1/ksuinit-aarch64" || true
           ls -lh userspace/ksud/bin/aarch64/
 
-      - name: Build BOTH Manager variants (compat + coexist)
+      - name: Extract official v3.3.1 libksud.so (all ABIs)
+        continue-on-error: true
+        run: |
+          curl -fL --retry 3 --max-time 600 -o upstream-official.apk \
+            "https://github.com/tiann/KernelSU/releases/download/v3.3.1/KernelSU_v3.3.1_32680-release.apk"
+          mkdir -p official-ksud
+          for abi in arm64-v8a x86_64 riscv64; do
+            unzip -p upstream-official.apk "lib/$abi/libksud.so" > "official-ksud/$abi.so" || true
+          done
+          ls -lh official-ksud/
+
+      - name: Build BOTH Manager variants (compat = official ksud, coexist = self-built)
         continue-on-error: true
         run: |
           set -e
@@ -75,16 +86,29 @@ jobs:
           mkdir -p dist
 
           build_one() {
-            PKG="$1"; NAME="$2"; OUT="$3"
+            PKG="$1"; NAME="$2"; OUT="$3"; MODE="$4"
             echo "=================================================="
-            echo " variant: $PKG  ->  dist/$OUT"
+            echo " variant: $PKG  ksud=$MODE  ->  dist/$OUT"
             echo "=================================================="
-            export KSU_PACKAGE_NAME="$PKG"
-            cargo build --target aarch64-linux-android --release \
-              --manifest-path ./userspace/ksud/Cargo.toml
-            mkdir -p manager/app/src/main/jniLibs/arm64-v8a
-            cp target/aarch64-linux-android/release/ksud \
-               manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+            if [ "$MODE" = "official" ]; then
+              # Byte-identical to the official v3.3.1 Manager. A third-party
+              # scanner that compares libksud.so content/size now sees exactly
+              # what it sees in the official package. Corresponding source is
+              # this repo's verbatim userspace/ksud + kernel/ trees.
+              for abi in arm64-v8a x86_64 riscv64; do
+                mkdir -p "manager/app/src/main/jniLibs/$abi"
+                cp "official-ksud/$abi.so" "manager/app/src/main/jniLibs/$abi/libksud.so"
+              done
+            else
+              export KSU_PACKAGE_NAME="$PKG"
+              cargo build --target aarch64-linux-android --release \
+                --manifest-path ./userspace/ksud/Cargo.toml
+              mkdir -p manager/app/src/main/jniLibs/arm64-v8a
+              cp target/aarch64-linux-android/release/ksud \
+                 manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+              rm -f manager/app/src/main/jniLibs/x86_64/libksud.so \
+                    manager/app/src/main/jniLibs/riscv64/libksud.so
+            fi
             file manager/app/src/main/jniLibs/arm64-v8a/libksud.so
             ( cd manager && ./gradlew :app:clean :app:assembleDebug \
                 -PKSU_PACKAGE_NAME="$PKG" \
@@ -96,15 +120,12 @@ jobs:
             echo "  built dist/$OUT ($(stat -c%s "dist/$OUT") bytes)"
           }
 
-          # Compatible variant: official package name, visible to hardcoded scanners.
           build_one "me.weishu.kernelsu" \
             "KernelSU (lyu323 Fork)" \
-            "KernelSU-lyu323-fork-compat.apk"
-          # Coexist variant: independent package name, can be installed next to
-          # the official Manager. See COMPATIBILITY.md for the trade-off.
+            "KernelSU-lyu323-fork-compat.apk" official
           build_one "me.lyu323.kernelsu" \
             "KernelSU (lyu323 Fork Coexist)" \
-            "KernelSU-lyu323-fork-coexist.apk"
+            "KernelSU-lyu323-fork-coexist.apk" self
 
 
       - name: Collect official upstream APK (reference / fallback)

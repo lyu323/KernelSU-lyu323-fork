@@ -141,3 +141,27 @@ No third-party tool was modified or reverse-engineered. The fork only makes
 both objective conditions (hardcoded package name + extractable libksud.so +
 embedded LKMs) true for the Compat variant; a tool's private checks remain
 outside this repository's control.
+
+### Commit 13 - official libksud.so for Compat + in-app read-only diagnostics
+
+Why: the user reported that DIRTYFRAGX now lists and launches the Compat Manager
+but the Manager still shows "Not installed" / no root. `ROOT_CAUSE.md` explains
+that finding/launching a Manager is not the same as a kernel-side root. A
+third-party scanner's private `libksud.so` check may compare content/size, so
+the Compat variant now ships the **official v3.3.1 `libksud.so` byte-for-byte**
+instead of the CI-built one.
+
+| File | Change |
+| --- | --- |
+| `.github/workflows/build-fork-manager.yml` | NEW step extracts all three ABIs' `libksud.so` from the official v3.3.1 APK; `build_one()` takes a MODE (`official` / `self`): Compat copies official binaries, Coexist still cross-compiles ksud with its own `KSU_PACKAGE_NAME`. |
+| `manager/app/src/main/java/me/weishu/kernelsu/ui/screen/home/DiagnosticsCard.kt` | NEW GPL-3.0-or-later file: read-only `DiagnosticsCard` Composable + `collectDiagnostics()`. Reports package, version, signer SHA-256, `nativeLibraryDir/libksud.so` (exists/size/ELF/8 embedded KMIs/ksuinit/manager package strings), `/dev/kernel_su`, `/data/adb/ksu`, SELinux enforce, device/kernel, and a plain conclusion. Copy-to-clipboard + open COMPATIBILITY.md. **No shell, no exploit, no partition access.** |
+| `HomeMaterial.kt`, `HomeMiuix.kt` | one `DiagnosticsCard()` call after `InfoCard` in both UI modes, with dated notices. |
+| `strings.xml`, `colors.xml` | three `diag_*` strings, `ksu_diag_accent`. |
+| `ROOT_CAUSE.md` | NEW Chinese explanation of the three separate events, the upstream Jailbreak/TIMEOUT chain, and the two legitimate paths to root. |
+| `COMPATIBILITY.md`, `ROOT_GUIDE.md`, `CHANGELOG_FORK.md`, `RELEASE_NOTES_BUILD.md`, `BUILD_INFO.md` | document commit 13. |
+| `.github/workflows/publish-fork-build.yml` | default tag -> `lyu323-fork-4-build1`. |
+
+**No exploit tuning, no alternative CVE chain, no security-patch bypass, no
+automatic boot flashing.** The Manager's install/jailbreak flow is upstream code,
+unchanged. This commit only makes the app's own side objectively verifiable and
+aligns the Compat binary with the official one.

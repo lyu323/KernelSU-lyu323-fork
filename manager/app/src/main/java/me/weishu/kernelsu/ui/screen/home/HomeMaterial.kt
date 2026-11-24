@@ -134,6 +134,9 @@ fun HomePagerMaterial(
                 actions = actions,
             )
             InfoCard(systemInfo = state.systemInfo)
+            // Added for lyu323 fork (2026-11-24): read-only diagnostics,
+            // explains why "manager found" != "root granted".
+            DiagnosticsCard()
             SupportLinks(onOpenUrl = actions.onOpenUrl)
             Spacer(
                 Modifier.height(

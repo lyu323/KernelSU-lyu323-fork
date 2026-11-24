@@ -48,3 +48,13 @@ This artifact set contains TWO fork APKs (Compat `me.weishu.kernelsu`, Coexist
 `me.lyu323.kernelsu`), both with extracted `libksud.so` + embedded official
 v3.3.1 LKMs, plus the official reference APK. See `COMPATIBILITY.md` for why
 two variants are necessary and `scripts/verify-manager-apk.sh` to check them.
+
+
+---
+
+### fork 4 (2026-11-24)
+
+Compat APK now contains the official v3.3.1 `libksud.so` (byte-identical, 3
+ABIs); Coexist keeps the self-built ksud. The Manager gained a read-only
+diagnostics card. See `ROOT_CAUSE.md` for why "scanner found the Manager" is
+not the same as "device has root". No exploit/flash helper was added.

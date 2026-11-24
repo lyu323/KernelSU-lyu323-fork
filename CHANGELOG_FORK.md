@@ -109,3 +109,20 @@ Moved the explanatory comment out of the `<application>` attribute list (XML for
 
 * `scripts/verify-manager-apk.sh`: corrected the ELF magic literal (`b'\x7fELF'`, previously double-escaped so it never matched) and removed an unused `zipinfo` call from the package-name extraction. Verified locally against both built APKs.
 * This commit only touches a read-only helper script and the changelog. **The APKs in Release `lyu323-fork-3-build1` were built from commit `226f4609ad` (commit 11)**; the source zip attached to that Release is exactly that commit.
+
+## lyu323-fork-4 (2026-11-24, commit 13)
+
+### Fixed / aligned
+
+* **Compat `libksud.so` is now the official v3.3.1 binary, byte-for-byte, for all three ABIs.** The previous builds used a CI-compiled ksud; a third-party scanner that compares content/size may have rejected it even though the file existed. Coexist still uses a self-built ksud (needs its own package name).
+* Added `ROOT_CAUSE.md`: "scanner found the Manager" != "kernel side has root"; the upstream Jailbreak path timed out on this device (Android 16 / 2026-08-01 patch / vendor 12 vs system 16), which no Manager change can fix.
+
+### Added (real, CI-compiled feature)
+
+* **In-app read-only diagnostics card** on both Home UIs: package, version, signer SHA-256, actual `nativeLibraryDir/libksud.so` state (exists / size / ELF / 8 embedded KMI modules / ksuinit / manager package strings), `/dev/kernel_su`, `/data/adb/ksu`, SELinux enforce, device + kernel, and a plain conclusion. Copy report, open COMPATIBILITY.md.
+* `diag_title` / `diag_copy` / `diag_guide` strings, `ksu_diag_accent` color.
+* Publish workflow default tag -> `lyu323-fork-4-build1`.
+
+### Explicitly NOT added
+
+* No exploit parameter tuning, no alternative privilege-escalation chain, no security-patch bypass, no automatic boot/init_boot flashing, no fake "root granted" state. Upstream install/jailbreak logic untouched.

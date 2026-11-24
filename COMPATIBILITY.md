@@ -66,3 +66,16 @@ bash scripts/verify-manager-apk.sh KernelSU-lyu323-fork-compat.apk
 `kernel/**` = GPL-2.0-only（`kernel/LICENSE`），其余 = GPL-3.0-or-later（`LICENSE`）。
 两个 APK 都随附两份许可证全文与**该次构建对应的精确源码 zip**。内嵌 `.ko` 来自官方 v3.3.1 Release，其对应源码是本仓库逐字节未改的 `kernel/` 树。
 私有仓库只适合留存自己的构建产物，不能据此对外闭源分发。
+
+## 7. v4：识别成功 ≠ 有 root（以及官方 ksud 对齐）
+
+图 39 里工具已列出并跳转到 Compat 管理器，但图 38 仍显示「未安装」——这两件事不矛盾：
+root 来自内核侧，Manager 只是面板。完整因果见 `ROOT_CAUSE.md`。
+
+v4 把 Compat 变体的 `libksud.so` 换成**官方 v3.3.1 APK 里提取的、逐字节一致的**二进制
+（arm64-v8a / x86_64 / riscv64 三个 ABI 全换）。若工具按内容或大小校验 so，现在与官方包完全一致；
+Coexist 因需要独立包名，仍用自编译 ksud。同时 App 首页新增「本机诊断（只读）」卡，
+可直接看到 `nativeLibraryDir/libksud.so` 的真实状态与 `/dev/kernel_su` 是否存在。
+
+若对齐后工具仍报「未找到」，属于其私有校验；用 `scripts/verify-manager-apk.sh` 打印客观事实对照。
+本 fork 不调 exploit、不刷分区、不绕过安全补丁。

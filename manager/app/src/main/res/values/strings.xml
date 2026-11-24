@@ -4,6 +4,10 @@
          unofficial fork. Format placeholders %1$s / %2$s are preserved.
          See FORK_NOTES.md. -->
     <string name="home">Home</string>
+    <!-- Added for lyu323 fork (2026-11-24): read-only diagnostics card -->
+    <string name="diag_title">本机诊断（只读）</string>
+    <string name="diag_copy">复制诊断</string>
+    <string name="diag_guide">查看兼容性说明</string>
     <string name="home_not_installed">Not installed</string>
     <string name="home_click_to_install">Tap to install</string>
     <string name="home_working">Working</string>
