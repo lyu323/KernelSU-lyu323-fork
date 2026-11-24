@@ -80,3 +80,14 @@ compare view.
 * everything else -> GPL-3.0-or-later, text in `LICENSE`
 
 See `NOTICE` and `LICENSE-COMPLIANCE.md` before redistributing any binary.
+
+### Commit 3 - reproducible cloud build (1 new file, 2 docs updated)
+
+| File | Change |
+| --- | --- |
+| `.github/workflows/build-fork-manager.yml` | NEW: `workflow_dispatch` job that checks out this fork, installs the upstream-pinned SDK/NDK, cross-compiles `ksud` (Rust) into `jniLibs`, runs `./gradlew :app:assembleDebug`, and uploads the APK together with `LICENSE` + `kernel/LICENSE`. Also downloads the official upstream APK as a reference/fallback, clearly named `upstream-official.apk`. |
+| `FORK_NOTES.md`, `CHANGELOG_FORK.md` | document commit 3 |
+
+The workflow produces a **real APK built from this fork's source** (debug-signed, arm64). It is not a repack of the official binary. Because the kernel side of official KernelSU validates the Manager APK signature, a debug-signed fork Manager will normally be rejected by a stock official kernel (it will show "Not installed" / unauthorized). To actually use it you must rebuild the kernel module with this APK's certificate hash (`KSU_MANAGER_PACKAGE` + expected signature) - see `LICENSE-COMPLIANCE.md` §2.7. No such kernel module is built here.
+
+If the cloud build fails, the repository still contains the complete source and no APK is claimed. Build status is recorded in the GitHub Actions run, not asserted in a README.

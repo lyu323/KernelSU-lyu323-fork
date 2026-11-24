@@ -1,0 +1,96 @@
+# Copyright (C) 2026 lyu323
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Added for lyu323 fork (2026-11-24). Added file, see FORK_NOTES.md.
+#
+# Reproducible cloud build of the FORK'S OWN Manager APK (not a repack of the
+# official binary). The corresponding source is exactly this commit; both
+# LICENSE and kernel/LICENSE must accompany any distributed APK.
+name: Build fork Manager APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-fork-manager.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - name: Checkout (full history for git describe)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK / NDK pieces (upstream pins API 37 + NDK 29)
+        run: |
+          for p in "platforms;android-37" "build-tools;37.0.0" "ndk;29.0.14206865"; do
+            yes | sdkmanager --install "$p" || true
+          done
+          sdkmanager --list_installed | grep -E 'android-37|37.0.0|29.0.14206865' || true
+
+      - name: Rust target + NDK env
+        run: |
+          echo "ANDROID_NDK_HOME=$ANDROID_HOME/ndk/29.0.14206865" >> "$GITHUB_ENV"
+          rustup target add aarch64-linux-android
+          rustup update stable
+
+      - name: Build ksud (Rust, arm64) into jniLibs
+        run: |
+          source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
+          cargo build --target aarch64-linux-android --release \
+            --manifest-path ./userspace/ksud/Cargo.toml
+          mkdir -p manager/app/src/main/jniLibs/arm64-v8a
+          cp target/aarch64-linux-android/release/ksud \
+            manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+          file manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+
+      - name: Build fork Manager debug APK
+        working-directory: manager
+        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
+
+      - name: Collect official upstream APK (reference / fallback)
+        run: |
+          curl -fL --retry 3 --max-time 600 -o upstream-official.apk \
+            "https://github.com/tiann/KernelSU/releases/download/v3.3.1/KernelSU_v3.3.1_32680-release.apk" || true
+          ls -lh upstream-official.apk 2>/dev/null || echo "official download skipped"
+
+      - name: Collect fork APK into dist/
+        run: |
+          mkdir -p dist
+          cp manager/app/build/outputs/apk/debug/*.apk dist/ || true
+          if [ -f upstream-official.apk ]; then cp upstream-official.apk dist/; fi
+          cp LICENSE kernel/LICENSE dist/
+          ls -lh dist/
+
+      - name: Upload fork APK + licenses
+        uses: actions/upload-artifact@v4
+        with:
+          name: fork-manager-apk
+          path: dist/*
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload full build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fork-build-logs
+          path: |
+            manager/app/build/outputs/logs/*
+            manager/build/reports/*
+          if-no-files-found: ignore

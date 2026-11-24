@@ -26,3 +26,15 @@ Based on upstream `2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4` (2026-11-21).
 
 * kernel/, userspace/, uapi/, js/, website/, .github/, dependency manifests, LICENSE, kernel/LICENSE
 * **No APK / .ko / ksud / boot image was compiled or uploaded.** Binaries linked from https://github.com/tiann/KernelSU/releases/tag/v3.3.1 are official upstream builds.
+
+## lyu323-fork-1 build workflow (2026-11-24)
+
+### Added
+
+* `.github/workflows/build-fork-manager.yml` - reproducible `workflow_dispatch` cloud build: full source checkout, upstream-pinned SDK/NDK, Rust `ksud` -> `jniLibs`, `./gradlew :app:assembleDebug`, artifact = fork APK + `LICENSE` + `kernel/LICENSE`. Official upstream APK is downloaded alongside it only as a clearly-labelled reference.
+* Documents the signature caveat: a debug-signed fork Manager is not accepted by a stock official kernel; the kernel module must be rebuilt with the matching certificate.
+
+### Still true
+
+* No APK is committed to the repository; binaries live in Actions artifacts / official upstream Releases.
+* Kernel module, ksud upstream logic, su/App Profile/SELinux logic remain verbatim; the workflow only builds the existing GPL source.
