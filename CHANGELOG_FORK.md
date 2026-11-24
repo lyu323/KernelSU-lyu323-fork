@@ -104,3 +104,8 @@ Moved the explanatory comment out of the `<application>` attribute list (XML for
 ### Still NOT added
 
 * No one-tap KSU/Magisk switch, no boot flashing, no exploit/temporary-root helper, no fake "switched" state.
+
+### Self-check script fix (commit 12, no APK change)
+
+* `scripts/verify-manager-apk.sh`: corrected the ELF magic literal (`b'\x7fELF'`, previously double-escaped so it never matched) and removed an unused `zipinfo` call from the package-name extraction. Verified locally against both built APKs.
+* This commit only touches a read-only helper script and the changelog. **The APKs in Release `lyu323-fork-3-build1` were built from commit `226f4609ad` (commit 11)**; the source zip attached to that Release is exactly that commit.

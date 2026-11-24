@@ -44,7 +44,7 @@ if not ks:
 else:
     for n in ks:
         d = z.read(n)
-        print(f"  {n}: {len(d)} bytes, ELF={d[:4] == b'\\x7fELF'}")
+        print(f"  {n}: {len(d)} bytes, ELF={d[:4] == b'\x7fELF'}")
     d = z.read(ks[0])
     kmis = [
         'android12-5.10_kernelsu.ko', 'android13-5.10_kernelsu.ko',
@@ -68,9 +68,12 @@ fi
 
 echo
 echo "--- expected conclusion ---"
-PKG=$(zipinfo -1 "$APK" >/dev/null 2>&1; \
-  if command -v "$AAPT" >/dev/null 2>&1; then "$AAPT" dump badging "$APK" 2>/dev/null \
-    | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -1; fi)
+PKG=$(
+  if command -v "$AAPT" >/dev/null 2>&1; then
+    "$AAPT" dump badging "$APK" 2>/dev/null \
+      | sed -n "s/^package: name='\([^']*\)'.*/\1/p" | head -1
+  fi
+)
 case "$PKG" in
   me.weishu.kernelsu)
     echo "  Compat variant: package name matches hardcoded scanners."
