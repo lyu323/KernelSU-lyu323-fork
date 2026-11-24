@@ -1,0 +1,60 @@
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+# Build artifacts (binary) - NOT source
+
+These files are build OUTPUTS of the Actions run named in the commit message.
+The corresponding source is the full repository at the exact source commit
+recorded in the commit message / Release notes (also published as a source
+zip). Both GPL license texts travel with every binary here:
+
+* `LICENSE` = GPL-3.0-or-later (root / Manager / docs)
+* `kernel-LICENSE` = GPL-2.0-only (`kernel/` directory)
+
+They are verbatim copies of the upstream license files; they were not changed.
+
+If you redistribute any APK from this branch you must ship that exact source
+tree and both license texts with it. A private repository is only suitable for
+keeping your own build artifacts; it cannot be used to hand a closed-source
+binary to other people.
+
+**Signature caveat:** the fork APK is DEBUG-SIGNED. A stock official KernelSU
+kernel validates the Manager APK signature and will normally reject it (the
+Manager will report "Not installed" / unauthorized). To actually use it you
+must rebuild the kernel module with this APK's certificate hash and, if you
+change `KSU_PACKAGE_NAME`, with `KSU_MANAGER_PACKAGE` as well.
+
+`upstream-official.apk` is the official, unmodified v3.3.1 Manager APK from
+https://github.com/tiann/KernelSU/releases/tag/v3.3.1 and is included only as
+a clearly-labelled reference. It is not a product of this fork.
+
+No kernel module, standalone ksud binary or boot image is distributed here.
+Nothing has been verified on a real device.
+
+
+---
+
+### fork 2 (2026-11-24)
+
+This build uses the independent package name `me.lyu323.kernelsu`, forces
+`android:extractNativeLibs="true"`, and embeds official v3.3.1 aarch64 LKM
+modules + ksuinit inside ksud. See `ROOT_GUIDE.md` for why the Manager reports
+"Not installed" and why a one-tap KernelSU/Magisk switch is not provided.
+
+
+---
+
+### fork 3 (2026-11-24)
+
+This artifact set contains TWO fork APKs (Compat `me.weishu.kernelsu`, Coexist
+`me.lyu323.kernelsu`), both with extracted `libksud.so` + embedded official
+v3.3.1 LKMs, plus the official reference APK. See `COMPATIBILITY.md` for why
+two variants are necessary and `scripts/verify-manager-apk.sh` to check them.
+
+
+---
+
+### fork 4 (2026-11-24)
+
+Compat APK now contains the official v3.3.1 `libksud.so` (byte-identical, 3
+ABIs); Coexist keeps the self-built ksud. The Manager gained a read-only
+diagnostics card. See `ROOT_CAUSE.md` for why "scanner found the Manager" is
+not the same as "device has root". No exploit/flash helper was added.
