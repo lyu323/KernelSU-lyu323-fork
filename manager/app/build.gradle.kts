@@ -1,4 +1,6 @@
 @file:Suppress("UnstableApiUsage")
+// Modified for lyu323 fork (2026-11-24): default Manager name carries a
+// fork label. See FORK_NOTES.md for the full diff and GPL notices.
 
 import com.google.protobuf.gradle.id
 
@@ -24,7 +26,7 @@ val managerVersionName = rootProject.extra["managerVersionName"] as String
 
 val isPrBuild = project.findProperty("IS_PR_BUILD")?.toString()?.toBoolean() ?: false
 val defaultManagerPackageName = if (isPrBuild) "me.weishu.kernelsu.pr" else "me.weishu.kernelsu"
-val defaultManagerName = if (isPrBuild) "KernelSU PR" else "KernelSU"
+val defaultManagerName = if (isPrBuild) "KernelSU PR" else "KernelSU (lyu323 Fork)"
 val managerPackageName = project.findProperty("KSU_PACKAGE_NAME")?.toString() ?: defaultManagerPackageName
 val managerName = project.findProperty("KSU_NAME")?.toString() ?: defaultManagerName
 

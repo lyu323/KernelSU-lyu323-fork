@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Modified for lyu323 fork (2026-11-24): splash follows fork palette.
+         See FORK_NOTES.md. -->
 
     <style name="Theme.KernelSU" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
 
     <style name="Theme.KernelSU.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@android:color/background_light</item>
+        <item name="windowSplashScreenBackground">@color/ic_splash_background</item>
         <item name="windowSplashScreenIconBackgroundColor">@color/ic_splash_background</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_splash</item>
         <item name="windowSplashScreenAnimationDuration">500</item>

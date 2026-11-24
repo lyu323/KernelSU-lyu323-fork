@@ -1,3 +1,6 @@
+// Modified for lyu323 fork (2026-11-24): version name gains a fork suffix.
+// See FORK_NOTES.md for the full diff and GPL notices.
+
 plugins {
     alias(libs.plugins.agp.app) apply false
     alias(libs.plugins.kotlin) apply false
@@ -31,5 +34,5 @@ fun getVersionCode(): Int {
 }
 
 fun getVersionName(): String {
-    return getGitDescribe()
+    return getGitDescribe() + "-lyu323-fork1"
 }

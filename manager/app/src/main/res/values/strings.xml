@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Modified for lyu323 fork (2026-11-24): About text marks this as an
+         unofficial fork. Format placeholders %1$s / %2$s are preserved.
+         See FORK_NOTES.md. -->
     <string name="home">Home</string>
     <string name="home_not_installed">Not installed</string>
     <string name="home_click_to_install">Tap to install</string>
@@ -111,7 +114,7 @@
     <string name="home_support_title">Support Us</string>
     <string name="home_support_content">KernelSU is, and always will be, free, and open source. However, you can show us that you care by making a donation.</string>
     <string name="home_gki_warning">Starting from v3.0.0, the GKI work mode will be used only in testing environments. We do not recommend it for daily use, and image files will no longer be provided.</string>
-    <string name="about_source_code"><![CDATA[View source code at %1$s<br/>Join our %2$s channel]]></string>
+    <string name="about_source_code"><![CDATA[Unofficial community fork by lyu323 - UI, theme defaults and branding only. Upstream source: %1$s<br/>Official community: %2$s<br/>Exact diff and GPL notes: FORK_NOTES.md]]></string>
     <string name="profile" translatable="false">App Profile</string>
     <string name="profile_default">Default</string>
     <string name="profile_template">Template</string>

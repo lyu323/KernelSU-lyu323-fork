@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#FFFFFFFF</color>
-    <color name="ic_launcher_foreground">#FF1E110D</color>
-    <color name="ic_splash_background">#FFF5F5F5</color>
+    <!-- Modified for lyu323 fork (2026-11-24): dark-cyan launcher palette.
+         See FORK_NOTES.md. -->
+    <color name="ic_launcher_background">#FF0B1020</color>
+    <color name="ic_launcher_foreground">#FF4DD0E1</color>
+    <color name="ic_splash_background">#FF0B1020</color>
 </resources>
