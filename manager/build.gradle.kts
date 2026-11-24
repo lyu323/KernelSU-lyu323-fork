@@ -34,5 +34,5 @@ fun getVersionCode(): Int {
 }
 
 fun getVersionName(): String {
-    return getGitDescribe() + "-lyu323-fork1"
+    return getGitDescribe() + "-lyu323-fork2"
 }

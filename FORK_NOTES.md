@@ -91,3 +91,26 @@ See `NOTICE` and `LICENSE-COMPLIANCE.md` before redistributing any binary.
 The workflow produces a **real APK built from this fork's source** (debug-signed, arm64). It is not a repack of the official binary. Because the kernel side of official KernelSU validates the Manager APK signature, a debug-signed fork Manager will normally be rejected by a stock official kernel (it will show "Not installed" / unauthorized). To actually use it you must rebuild the kernel module with this APK's certificate hash (`KSU_MANAGER_PACKAGE` + expected signature) - see `LICENSE-COMPLIANCE.md` §2.7. No such kernel module is built here.
 
 If the cloud build fails, the repository still contains the complete source and no APK is claimed. Build status is recorded in the GitHub Actions run, not asserted in a README.
+
+### Commit 8 - independent package name, native lib extraction, bundled LKM, UI + root guide
+
+| File | Change |
+| --- | --- |
+| `manager/gradle.properties` | NEW `KSU_PACKAGE_NAME=me.lyu323.kernelsu` + `KSU_NAME`. Fixes the same-package-name conflict: fork and official Manager can now coexist. |
+| `manager/app/src/main/AndroidManifest.xml` | NEW `android:extractNativeLibs="true"` so `libksud.so` is a real file in `nativeLibraryDir` (fixes external tooling reporting no manager with libksud.so). |
+| `manager/build.gradle.kts` | version suffix `lyu323-fork1` -> `lyu323-fork2`. |
+| `manager/app/src/main/res/values/strings.xml` | About text now also explains the "Not installed" state, the debug-signature limit, and why KernelSU/Magisk cannot be switched with an in-app toggle. `%1$s`/`%2$s` preserved. |
+| `manager/app/src/main/res/values/colors.xml`, `themes.xml` | status/navigation bar colors + light-bar flags follow the dark-cyan palette (visible UI polish). |
+| `.github/workflows/build-fork-manager.yml` | downloads official v3.3.1 aarch64 LKM modules for 8 KMI variants and `ksuinit-aarch64` into `userspace/ksud/bin/aarch64/` before `cargo build`, so ksud actually embeds kernel modules; exports `KSU_PACKAGE_NAME` for the Rust build too. |
+| `ROOT_GUIDE.md` | NEW Chinese guide: why "Not installed", the three fixes, why a one-tap KSU/Magisk switch is not possible, pre-switch checklist, and a neutral explanation of the third-party exploit timeout. |
+| `FORK_NOTES.md`, `CHANGELOG_FORK.md` | document commit 8 |
+
+**The `.ko` binaries are GPL-2.0-only**, sourced from the official v3.3.1 Release;
+their corresponding source is the verbatim `kernel/` tree in this repository.
+Both license texts are shipped with every APK.
+
+**No in-app root-solution switch was added.** Magisk and KernelSU both replace
+boot/init_boot and cannot be active simultaneously; switching requires re-flashing
+a matching image and rebooting. This fork deliberately does not flash, patch or
+replace any partition and does not present a fake "switched" state. `ROOT_GUIDE.md`
+contains the read-only checklist instead.

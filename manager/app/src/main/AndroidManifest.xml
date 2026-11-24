@@ -23,6 +23,10 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:directBootAware="true"
+        <!-- Modified for lyu323 fork (2026-11-24): force extraction so
+             libksud.so is a real file in nativeLibraryDir and can be read
+             by external tooling. See FORK_NOTES.md. -->
+        android:extractNativeLibs="true"
         android:fullBackupContent="@xml/backup_rules"
         android:hasFragileUserData="true"
         android:icon="@mipmap/ic_launcher"

@@ -5,4 +5,7 @@
     <color name="ic_launcher_background">#FF0B1020</color>
     <color name="ic_launcher_foreground">#FF4DD0E1</color>
     <color name="ic_splash_background">#FF0B1020</color>
+    <!-- lyu323 fork (2026-11-24): system bar colors -->
+    <color name="ksu_status_bar">#FF0B1020</color>
+    <color name="ksu_nav_bar">#FF0B1020</color>
 </resources>

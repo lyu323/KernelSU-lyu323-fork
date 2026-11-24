@@ -56,3 +56,22 @@ Based on upstream `2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4` (2026-11-21).
 ### Artifact publishing fix (2026-11-24, commit 7)
 
 * Fixed the publish workflow YAML (an unindented heredoc inside a `run: |` block made GitHub fail to register its `workflow_dispatch` trigger). Release notes and binary-build info are now plain repository files (`RELEASE_NOTES_BUILD.md`, `BUILD_INFO.md`) instead of shell heredocs.
+
+## lyu323-fork-2 (2026-11-24, commit 8)
+
+### Fixed
+
+* **Same package name**: `applicationId` changed to `me.lyu323.kernelsu`; fork and official Manager can coexist (were conflicting on `me.weishu.kernelsu`).
+* **`libksud.so` not visible to external tooling**: `android:extractNativeLibs="true"`.
+* **No kernel module inside ksud**: build now bundles official v3.3.1 aarch64 LKMs for 8 KMI variants + `ksuinit` before compiling ksud, and exports `KSU_PACKAGE_NAME` to the Rust build.
+* Version suffix -> `-lyu323-fork2`.
+
+### Added / changed (UI, docs)
+
+* About page explains "Not installed", the debug-signature limit, and the KernelSU/Magisk switching reality (no fake toggle).
+* Status/navigation bars now follow the dark-cyan palette.
+* `ROOT_GUIDE.md`: read-only diagnostics, safe pre-switch checklist, neutral note on the third-party exploit timeout.
+
+### Explicitly NOT added
+
+* No one-tap KSU/Magisk switch, no automatic boot-image flashing, no exploit/temporary-root helper. Both root solutions replace boot/init_boot and cannot be active at once; switching needs a matching image + reboot. The app does not touch any partition.

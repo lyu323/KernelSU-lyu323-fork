@@ -53,10 +53,25 @@ jobs:
           rustup target add aarch64-linux-android
           rustup update stable
 
+      - name: Bundle official upstream LKM modules + ksuinit into ksud
+        continue-on-error: true
+        run: |
+          mkdir -p userspace/ksud/bin/aarch64
+          for kmi in android12-5.10 android13-5.10 android13-5.15 android14-5.15 android14-6.1 android15-6.6 android16-6.12 android17-6.18; do
+            curl -fL --retry 3 --max-time 180 \
+              -o "userspace/ksud/bin/aarch64/${kmi}_kernelsu.ko" \
+              "https://github.com/tiann/KernelSU/releases/download/v3.3.1/lkm-aarch64-${kmi}_kernelsu.ko" \
+              || rm -f "userspace/ksud/bin/aarch64/${kmi}_kernelsu.ko"
+          done
+          curl -fL --retry 3 --max-time 180 -o userspace/ksud/bin/aarch64/ksuinit \
+            "https://github.com/tiann/KernelSU/releases/download/v3.3.1/ksuinit-aarch64" || true
+          ls -lh userspace/ksud/bin/aarch64/
+
       - name: Build ksud (Rust, arm64) into jniLibs
         continue-on-error: true
         run: |
           source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
+          export KSU_PACKAGE_NAME=me.lyu323.kernelsu
           cargo build --target aarch64-linux-android --release \
             --manifest-path ./userspace/ksud/Cargo.toml
           mkdir -p manager/app/src/main/jniLibs/arm64-v8a
