@@ -1,0 +1,47 @@
+KernelSU (lyu323 community fork) - NOTICE
+=========================================
+
+This repository is an UNOFFICIAL community fork of tiann/KernelSU.
+Upstream project: https://github.com/tiann/KernelSU
+Upstream commit this fork is based on: 2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4
+Fork created / modified on: 2026-11-24
+
+LICENSE PARTITION (inherited from upstream, unchanged)
+-----------------------------------------------------
+* All files under kernel/ are licensed GPL-2.0-only.
+  The full text is kept verbatim at kernel/LICENSE.
+* All other parts (manager/, userspace/, js/, docs/, scripts/, website/,
+  root build files, etc.) are licensed GPL-3.0-or-later.
+  The full text is kept verbatim at LICENSE.
+* This fork does NOT relicense any upstream file. Both LICENSE texts are
+  preserved verbatim; no copyright header was removed or altered.
+
+MODIFICATIONS IN THIS FORK
+--------------------------
+Only the files listed in FORK_NOTES.md were modified, and each modified
+source/resource file carries a prominent notice at its top with the date
+and a pointer to FORK_NOTES.md. No kernel module, ksud, ksuinit, su,
+App Profile, module system, SELinux or root-granting logic was changed.
+
+New files added by this fork (docs/scripts) are offered under the same
+license as the directory they live in: root-level docs under
+GPL-3.0-or-later, scripts/ under GPL-3.0-or-later.
+
+THIRD-PARTY COMPONENTS
+----------------------
+Upstream credits are preserved in the upstream README/AGENTS/SECURITY
+files and in dependency manifests (Cargo.toml, Cargo.lock,
+manager/gradle/libs.versions.toml). Each third-party component keeps its
+own license; this NOTICE does not replace those licenses.
+
+BIMODAL DISTRIBUTION RULE
+-------------------------
+If you distribute any binary built from this fork (Manager APK, kernelsu.ko,
+ksud, boot image, etc.), you must at the same time provide the complete
+corresponding source code of THAT EXACT build and keep both license texts.
+A private repository is fine for storing your own build artifacts, but it
+CANNOT be used as the basis for distributing a closed-source binary to
+others. See LICENSE-COMPLIANCE.md.
+
+This fork distributes NO modified APK. Official, unmodified binaries are
+linked (not copied) from the upstream Releases page.
