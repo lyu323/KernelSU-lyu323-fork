@@ -75,3 +75,7 @@ Based on upstream `2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4` (2026-11-21).
 ### Explicitly NOT added
 
 * No one-tap KSU/Magisk switch, no automatic boot-image flashing, no exploit/temporary-root helper. Both root solutions replace boot/init_boot and cannot be active at once; switching needs a matching image + reboot. The app does not touch any partition.
+
+### XML fix (commit 9)
+
+Moved the explanatory comment out of the `<application>` attribute list (XML forbids comments between attributes). `android:extractNativeLibs="true"` itself is unchanged.
