@@ -76,3 +76,14 @@ Manager APK 只是控制面板。所以：
 在没有内核侧 KSU、且内核未用本 APK 证书重建的情况下，本 fork 的 Manager
 只能作为**只读控制面板 + 状态/许可/引导查看器**使用；「未安装」会一直显示。
 想要能用的 root，请装官方 v3.3.1 Manager 并按官方流程处理内核。
+
+## 6. v3 补充：两个变体与「为什么 v2 显示不了」
+
+见 `COMPATIBILITY.md`。一句话：**第三方工具按官方包名 `me.weishu.kernelsu` 硬编码扫描**，v1 用这个包名所以能被列出（但当时 `libksud.so` 没解压，弹「未找到」），v2 为修同包名冲突改成 `me.lyu323.kernelsu`，工具连候选都找不到，于是显示「请先选择 SU 管理器」。
+
+v3 一次构建出两个 APK：
+
+* **Compat**（默认，`me.weishu.kernelsu`）→ 配合这类工具用，不能与官方 Manager 共存；
+* **Coexist**（`me.lyu323.kernelsu`）→ 可与官方 Manager 并存，硬编码扫描器看不到。
+
+两个都带解压后的 `libksud.so` 与 8 个 KMI 模块。用 `scripts/verify-manager-apk.sh <apk>` 可逐项自检。这是硬编码包名决定的取舍，无法「既独立包名又被扫描器找到」；本 fork 不做任何伪装壳。

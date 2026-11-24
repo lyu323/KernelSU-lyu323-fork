@@ -8,4 +8,7 @@
     <!-- lyu323 fork (2026-11-24): system bar colors -->
     <color name="ksu_status_bar">#FF0B1020</color>
     <color name="ksu_nav_bar">#FF0B1020</color>
+    <!-- lyu323 fork v3 (2026-11-24): accent + secondary launcher tint -->
+    <color name="ksu_accent">#FF26C6DA</color>
+    <color name="ic_launcher_foreground_alt">#FF80DEEA</color>
 </resources>

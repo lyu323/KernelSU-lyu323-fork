@@ -10,6 +10,8 @@
         <item name="android:navigationBarColor">@color/ksu_nav_bar</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
+        <!-- lyu323 fork v3 (2026-11-24): accent for platform controls -->
+        <item name="android:colorAccent">@color/ksu_accent</item>
     </style>
 
     <style name="Theme.KernelSU.Starting" parent="Theme.SplashScreen">

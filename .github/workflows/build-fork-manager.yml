@@ -67,22 +67,45 @@ jobs:
             "https://github.com/tiann/KernelSU/releases/download/v3.3.1/ksuinit-aarch64" || true
           ls -lh userspace/ksud/bin/aarch64/
 
-      - name: Build ksud (Rust, arm64) into jniLibs
+      - name: Build BOTH Manager variants (compat + coexist)
         continue-on-error: true
         run: |
+          set -e
           source .github/scripts/setup-rust-build.sh aarch64-linux-android 26
-          export KSU_PACKAGE_NAME=me.lyu323.kernelsu
-          cargo build --target aarch64-linux-android --release \
-            --manifest-path ./userspace/ksud/Cargo.toml
-          mkdir -p manager/app/src/main/jniLibs/arm64-v8a
-          cp target/aarch64-linux-android/release/ksud \
-            manager/app/src/main/jniLibs/arm64-v8a/libksud.so
-          file manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+          mkdir -p dist
 
-      - name: Build fork Manager debug APK
-        continue-on-error: true
-        working-directory: manager
-        run: ./gradlew :app:assembleDebug --stacktrace --no-daemon
+          build_one() {
+            PKG="$1"; NAME="$2"; OUT="$3"
+            echo "=================================================="
+            echo " variant: $PKG  ->  dist/$OUT"
+            echo "=================================================="
+            export KSU_PACKAGE_NAME="$PKG"
+            cargo build --target aarch64-linux-android --release \
+              --manifest-path ./userspace/ksud/Cargo.toml
+            mkdir -p manager/app/src/main/jniLibs/arm64-v8a
+            cp target/aarch64-linux-android/release/ksud \
+               manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+            file manager/app/src/main/jniLibs/arm64-v8a/libksud.so
+            ( cd manager && ./gradlew :app:clean :app:assembleDebug \
+                -PKSU_PACKAGE_NAME="$PKG" \
+                -PKSU_NAME="$NAME" \
+                --stacktrace --no-daemon )
+            APK=$(find manager/app/build/outputs/apk/debug -name '*.apk' -print -quit)
+            test -n "$APK"
+            cp "$APK" "dist/$OUT"
+            echo "  built dist/$OUT ($(stat -c%s "dist/$OUT") bytes)"
+          }
+
+          # Compatible variant: official package name, visible to hardcoded scanners.
+          build_one "me.weishu.kernelsu" \
+            "KernelSU (lyu323 Fork)" \
+            "KernelSU-lyu323-fork-compat.apk"
+          # Coexist variant: independent package name, can be installed next to
+          # the official Manager. See COMPATIBILITY.md for the trade-off.
+          build_one "me.lyu323.kernelsu" \
+            "KernelSU (lyu323 Fork Coexist)" \
+            "KernelSU-lyu323-fork-coexist.apk"
+
 
       - name: Collect official upstream APK (reference / fallback)
         run: |
@@ -95,7 +118,8 @@ jobs:
         run: |
           set +e
           mkdir -p dist
-          find manager/app/build/outputs -type f -name '*.apk' -print -exec cp {} dist/ \;
+          echo "--- gradle outputs (informational only; named variants already in dist/) ---"
+          find manager/app/build/outputs -type f -name '*.apk' -printf '%p  %s bytes\n' || true
           if [ -s upstream-official.apk ]; then
             cp upstream-official.apk dist/upstream-official.apk
           fi

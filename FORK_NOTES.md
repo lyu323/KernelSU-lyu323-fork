@@ -114,3 +114,30 @@ boot/init_boot and cannot be active simultaneously; switching requires re-flashi
 a matching image and rebooting. This fork deliberately does not flash, patch or
 replace any partition and does not present a fake "switched" state. `ROOT_GUIDE.md`
 contains the read-only checklist instead.
+
+### Commit 11 - compat + coexist dual build (why v1 was visible and v2 was not)
+
+Root cause: third-party tooling (DIRTYFRAGX and similar) enumerates installed
+apps by the hardcoded official package name `me.weishu.kernelsu`. v1 used that
+name (visible, but `libksud.so` was not extracted -> "not found" dialog); v2
+changed to `me.lyu323.kernelsu` to fix the same-package conflict (so extracted,
+but no candidate app at all -> "please select SU manager"). Each version
+satisfied only half of the conditions. See `COMPATIBILITY.md`.
+
+| File | Change |
+| --- | --- |
+| `manager/gradle.properties` | default `KSU_PACKAGE_NAME` back to `me.weishu.kernelsu` (compat), with a comment that `-PKSU_PACKAGE_NAME=me.lyu323.kernelsu` produces the coexist build. |
+| `userspace/ksud/build.rs` | GPL-3.0-or-later userspace, 3 lines + dated notice: always emit `cargo:rustc-env=KSU_PACKAGE_NAME=<effective value>` and declare `cargo:rerun-if-env-changed=KSU_PACKAGE_NAME`, so two builds with different package names do not share a stale `libksud.so`. **This is the only userspace source file modified by this fork**; no root/su/module/SELinux logic touched. |
+| `.github/workflows/build-fork-manager.yml` | one CI run now builds BOTH variants (same ksud source, different `KSU_PACKAGE_NAME` / `KSU_NAME`), writing `KernelSU-lyu323-fork-compat.apk` and `KernelSU-lyu323-fork-coexist.apk` into `dist/`; collect step no longer duplicates the last Gradle output. |
+| `.github/workflows/publish-fork-build.yml` | default release tag -> `lyu323-fork-3-build1`. |
+| `manager/app/src/main/res/values/strings.xml` | About page documents both variants, the compatibility self-check, and keeps `%1$s`/`%2$s`. |
+| `manager/app/src/main/res/values/colors.xml`, `themes.xml`, `drawable/ic_launcher_foreground.xml` | new `ksu_accent`, `colorAccent`, two-tone launcher mark. |
+| `manager/app/src/main/res/values-night/colors.xml` | NEW: night-mode status/nav/splash colors (previously fell back to light values). |
+| `COMPATIBILITY.md` | NEW Chinese explanation of the v1/v2 difference, the trade-off, the build.rs fix and self-check. |
+| `scripts/verify-manager-apk.sh` | NEW read-only APK self-check: package, label, extractNativeLibs, libksud.so, 8 embedded KMI modules, ksuinit, signing certificate, expected conclusion. |
+| `ROOT_GUIDE.md`, `CHANGELOG_FORK.md`, `RELEASE_NOTES_BUILD.md`, `BUILD_INFO.md` | document commit 11 |
+
+No third-party tool was modified or reverse-engineered. The fork only makes
+both objective conditions (hardcoded package name + extractable libksud.so +
+embedded LKMs) true for the Compat variant; a tool's private checks remain
+outside this repository's control.

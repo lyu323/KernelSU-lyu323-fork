@@ -1,4 +1,4 @@
-## lyu323 fork 2 - built Manager APK (UNOFFICIAL)
+## lyu323 fork 3 - TWO built Manager APKs (UNOFFICIAL)
 
 **What is fixed in this build**
 
@@ -27,3 +27,29 @@
 * The bundled `.ko` binaries come from the official v3.3.1 Release; their corresponding source is this repository's verbatim `kernel/` tree.
 
 Build run: https://github.com/lyu323/KernelSU-lyu323-fork/actions
+
+
+---
+
+### fork 3: two variants (why v1 was visible and v2 was not)
+
+Third-party scanners such as DIRTYFRAGX look for the hardcoded official package
+name `me.weishu.kernelsu`. v1 had that name but did not extract `libksud.so`;
+v2 extracted the library but renamed the package, so no candidate was found at
+all. Each version satisfied only half of the conditions. See `COMPATIBILITY.md`.
+
+This Release therefore ships **two APKs built from the same source commit**:
+
+| APK | package | use |
+| --- | --- | --- |
+| `KernelSU-lyu323-fork-compat.apk` | `me.weishu.kernelsu` | visible to hardcoded scanners; cannot coexist with official Manager |
+| `KernelSU-lyu323-fork-coexist.apk` | `me.lyu323.kernelsu` | coexists with official Manager; invisible to those scanners |
+
+Both have `extractNativeLibs=true`, a real `lib/arm64-v8a/libksud.so`, and the
+official v3.3.1 aarch64 LKM modules for 8 KMI variants + ksuinit. Also added:
+`COMPATIBILITY.md`, `scripts/verify-manager-apk.sh`, night-mode system-bar
+colors, `colorAccent`, a two-tone launcher mark, and About-page self-check
+instructions. `userspace/ksud/build.rs` now forwards `KSU_PACKAGE_NAME` on every
+build (dated notice; no root logic changed).
+
+`upstream-official.apk` remains the official unmodified v3.3.1 reference.

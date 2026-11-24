@@ -1,3 +1,7 @@
+// Modified for lyu323 fork (2026-11-24): always forward KSU_PACKAGE_NAME to
+// rustc and declare it as a tracked env var, so two CI builds with different
+// Manager package names produce different ksud binaries. See FORK_NOTES.md
+// and COMPATIBILITY.md. This is GPL-3.0-or-later userspace code.
 use std::env;
 use std::ffi::OsString;
 use std::fs;
@@ -233,9 +237,14 @@ fn main() {
             (0, "0.0.0".to_string())
         }
     };
-    if env::var("KSU_PACKAGE_NAME").is_err() {
-        println!("cargo:rustc-env=KSU_PACKAGE_NAME=me.weishu.kernelsu");
-    }
+    // Modified for lyu323 fork (2026-11-24): forward the effective package
+    // name on EVERY build and let Cargo rebuild when the env var changes.
+    // The old code only emitted a fallback when the variable was absent, so a
+    // second build with a different KSU_PACKAGE_NAME could reuse a stale .so.
+    let ksu_package_name =
+        env::var("KSU_PACKAGE_NAME").unwrap_or_else(|_| "me.weishu.kernelsu".to_string());
+    println!("cargo:rerun-if-env-changed=KSU_PACKAGE_NAME");
+    println!("cargo:rustc-env=KSU_PACKAGE_NAME={ksu_package_name}");
     println!("cargo:rustc-env=VERSION_CODE={code}");
     println!("cargo:rustc-env=VERSION_NAME={name}");
 

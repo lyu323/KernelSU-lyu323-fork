@@ -38,3 +38,13 @@ This build uses the independent package name `me.lyu323.kernelsu`, forces
 `android:extractNativeLibs="true"`, and embeds official v3.3.1 aarch64 LKM
 modules + ksuinit inside ksud. See `ROOT_GUIDE.md` for why the Manager reports
 "Not installed" and why a one-tap KernelSU/Magisk switch is not provided.
+
+
+---
+
+### fork 3 (2026-11-24)
+
+This artifact set contains TWO fork APKs (Compat `me.weishu.kernelsu`, Coexist
+`me.lyu323.kernelsu`), both with extracted `libksud.so` + embedded official
+v3.3.1 LKMs, plus the official reference APK. See `COMPATIBILITY.md` for why
+two variants are necessary and `scripts/verify-manager-apk.sh` to check them.

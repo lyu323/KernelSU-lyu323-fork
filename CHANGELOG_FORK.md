@@ -83,3 +83,24 @@ Moved the explanatory comment out of the `<application>` attribute list (XML for
 ### Publish workflow parametrized (commit 10)
 
 `publish-fork-build.yml` now takes a `release_tag` input (default `lyu323-fork-2-build1`), downloads the exact source commit zip into the Release, and appends the source commit + build run id to the notes. No source logic changed.
+
+## lyu323-fork-3 (2026-11-24, commit 11)
+
+### Fixed: "v1 visible / v2 invisible" in hardcoded scanners
+
+* Default `applicationId` back to official `me.weishu.kernelsu` -> **Compat** variant, visible to DIRTYFRAGX-style scanners.
+* Kept `android:extractNativeLibs="true"` and embedded official v3.3.1 LKMs -> the scanner can now actually read `libksud.so` (v1 failed on this).
+* Added a **Coexist** variant (`me.lyu323.kernelsu`) in the SAME CI run -> the previous "no same-package conflict" capability is not lost. Both APKs are shipped side by side.
+* `userspace/ksud/build.rs`: always forward `KSU_PACKAGE_NAME` to rustc + `rerun-if-env-changed`, so the two variants get correct, different `libksud.so` instead of a cached one. Only userspace source file changed; no root logic touched.
+
+### Added / UI
+
+* `COMPATIBILITY.md` - full explanation of the v1/v2 difference and the trade-off.
+* `scripts/verify-manager-apk.sh` - read-only APK self-check (package, label, extractNativeLibs, libksud.so, 8 embedded KMIs, ksuinit, cert, expected conclusion).
+* About page: both variants + self-check instructions; `%1$s`/`%2$s` preserved.
+* New `ksu_accent` / `android:colorAccent`, two-tone launcher foreground, `values-night/colors.xml` for night-mode system bars.
+* Publish workflow default tag -> `lyu323-fork-3-build1`.
+
+### Still NOT added
+
+* No one-tap KSU/Magisk switch, no boot flashing, no exploit/temporary-root helper, no fake "switched" state.

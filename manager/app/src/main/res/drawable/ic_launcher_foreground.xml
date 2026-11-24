@@ -15,8 +15,10 @@
         <path
             android:fillColor="@color/ic_launcher_foreground"
             android:pathData="M 257 257 H 407 V 407 H 257 V 257 Z" />
+        <!-- Modified for lyu323 fork (2026-11-24): second tile uses the
+             lighter accent so the launcher mark has visible depth. -->
         <path
-            android:fillColor="@color/ic_launcher_foreground"
+            android:fillColor="@color/ic_launcher_foreground_alt"
             android:pathData="M 393 393 H 543 V 543 H 393 V 393 Z" />
     </group>
 </vector>

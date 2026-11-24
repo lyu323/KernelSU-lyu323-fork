@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Added for lyu323 fork (2026-11-24). New file, see FORK_NOTES.md.
+         Night-mode system bars follow the same dark-cyan palette; without
+         this, Android would fall back to the light values in values/. -->
+    <color name="ksu_status_bar">#FF050810</color>
+    <color name="ksu_nav_bar">#FF050810</color>
+    <color name="ic_splash_background">#FF050810</color>
+</resources>
