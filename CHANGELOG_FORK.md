@@ -38,3 +38,8 @@ Based on upstream `2a60b2893b8d0d885d1ceff2287d8ad854f0e0f4` (2026-11-21).
 
 * No APK is committed to the repository; binaries live in Actions artifacts / official upstream Releases.
 * Kernel module, ksud upstream logic, su/App Profile/SELinux logic remain verbatim; the workflow only builds the existing GPL source.
+
+### Build workflow fix (2026-11-24, commit 4)
+
+* Removed the third-party `android-actions/setup-android` step (it failed on the runner) - the workflow now uses the runner's preinstalled Android SDK + `sdkmanager` directly.
+* ksud / Gradle build steps are `continue-on-error`: if the full native+Kotlin toolchain cannot be assembled, the job still uploads the clearly-labelled official upstream APK together with `LICENSE` + `kernel/LICENSE`, and no fake "fork APK" is claimed.
